@@ -35,7 +35,7 @@ class Book
 
     function __get($name)
     {
-        if (!empty($this->attributes[$name])) {
+        if (! empty($this->attributes[$name])) {
             return $this->attributes[$name];
         }
 

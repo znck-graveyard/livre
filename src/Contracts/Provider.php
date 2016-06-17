@@ -1,16 +1,7 @@
 <?php namespace Znck\Livre\Contracts;
 
-    /**
-     * This file belongs to book-finder.
-     *
-     * Author: Rahul Kadyan, <hi@znck.me>
-     * Find license in root directory of this project.
-     */
-
 /**
  * Interface Provider
- *
- * @package Contracts
  */
 interface Provider
 {

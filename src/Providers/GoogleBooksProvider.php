@@ -17,15 +17,15 @@ class GoogleBooksProvider extends Provider
      */
     const API = 'https://www.googleapis.com/books/v1/volumes?q=';
     /**
-     * @type \GuzzleHttp\Client
+     * @var \GuzzleHttp\Client
      */
     protected $client;
     /**
-     * @type \GuzzleHttp\Psr7\Response
+     * @var \GuzzleHttp\Psr7\Response
      */
     protected $response;
     /**
-     * @type string
+     * @var string
      */
     protected $key;
 
@@ -37,7 +37,7 @@ class GoogleBooksProvider extends Provider
     function __construct($options)
     {
         if (empty($options['key'])) {
-            throw new \InvalidArgumentException;
+            throw new \InvalidArgumentException();
         }
 
         $this->client = new Client();
@@ -70,7 +70,7 @@ class GoogleBooksProvider extends Provider
         $query = implode(' ', $processed[1]);
 
         foreach ($processed[0] as $key => $value) {
-            $query .= ' ' . $key . $value;
+            $query .= ' '.$key.$value;
         }
 
         $query = $this->prepareQuery($query);
@@ -133,7 +133,7 @@ class GoogleBooksProvider extends Provider
         $query = urlencode(trim($query));
         $query = str_replace('%3A', ':', $query);
 
-        return static::API . $query . '&key=' . $this->key;
+        return static::API.$query.'&key='.$this->key;
     }
 
     /**

@@ -1,5 +1,6 @@
 # Created by https://www.gitignore.io
-
+.php_cs.cache
+build/
 ### PhpStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 

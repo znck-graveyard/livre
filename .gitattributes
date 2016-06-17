@@ -1,0 +1,7 @@
+.gitignore
+.php_cs
+cover.png
+circle.yml
+CONDUCT.md
+CONTRIBUTING.md
+README.md

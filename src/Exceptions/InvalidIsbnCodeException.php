@@ -1,4 +1,6 @@
-<?php  namespace Exceptions;
+<?php 
+
+namespace Exceptions;
 
 use \Exception;
 
@@ -8,6 +10,6 @@ use \Exception;
  * Author: Rahul Kadyan, <hi@znck.me>
  * Find license in root directory of this project.
  */
-class InvalidIsbnCodeException extends Exception {
-
+class InvalidIsbnCodeException extends Exception
+{
 }

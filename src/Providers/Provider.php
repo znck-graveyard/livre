@@ -2,16 +2,10 @@
 
 use Znck\Livre\Contracts\Provider as ProviderContract;
 
-/**
- * This file belongs to book-finder.
- *
- * Author: Rahul Kadyan, <hi@znck.me>
- * Find license in root directory of this project.
- */
 abstract class Provider implements ProviderContract
 {
     /**
-     * @type string
+     * @var string
      */
     protected $name;
 
@@ -48,7 +42,7 @@ abstract class Provider implements ProviderContract
         $processed = [];
         $ignored = [];
         foreach ($query as $key => $value) {
-            if (!empty($value)) {
+            if (! empty($value)) {
                 if (array_key_exists($key, $map)) {
                     $processed[$map[$key]] = $value;
                 } else {
@@ -66,7 +60,7 @@ abstract class Provider implements ProviderContract
 
         foreach (array_dot($map) as $key => $replace) {
             $value = array_get($processed, $key);
-            if (!empty($value)) {
+            if (! empty($value)) {
                 $processed[$replace] = $value;
                 array_forget($processed, $key);
             }
@@ -74,5 +68,4 @@ abstract class Provider implements ProviderContract
 
         return $processed;
     }
-
 }

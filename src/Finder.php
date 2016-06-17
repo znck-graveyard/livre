@@ -13,7 +13,7 @@ use Znck\Livre\Exceptions\ProviderNotFound;
 class Finder
 {
     /**
-     * @type \Znck\Livre\Contracts\Provider[]
+     * @var \Znck\Livre\Contracts\Provider[]
      */
     protected $providers;
     protected $isbn;
@@ -32,8 +32,8 @@ class Finder
 
     public function findByIsbn($isbn)
     {
-        if (!$this->isbn->validation->isbn($isbn)) {
-            throw new InvalidIsbnCodeException;
+        if (! $this->isbn->validation->isbn($isbn)) {
+            throw new InvalidIsbnCodeException();
         }
         $isbn = $this->isbn->hyphens->fixHyphens($isbn);
         $books = $this->find(compact('isbn'));
@@ -75,7 +75,7 @@ class Finder
         foreach ($this->providers as $provider) {
             $results = $provider->search($options)->getResults();
 
-            if (!empty($results)) {
+            if (! empty($results)) {
                 return $results;
             }
         }
@@ -88,19 +88,20 @@ class Finder
      *
      * @param $providers
      *
-     * @return \Znck\Livre\Contracts\Provider[]
      * @throws \Znck\Livre\Exceptions\ProviderNotFound
+     *
+     * @return \Znck\Livre\Contracts\Provider[]
      */
     private function sort($providers)
     {
         $callable = function ($a, $b) {
-            if (!isset($a['priority']) && isset($b['priority'])) {
+            if (! isset($a['priority']) && isset($b['priority'])) {
                 return 1;
             }
-            if (isset($a['priority']) && !isset($b['priority'])) {
+            if (isset($a['priority']) && ! isset($b['priority'])) {
                 return -1;
             }
-            if (!isset($a['priority']) && !isset($b['priority'])) {
+            if (! isset($a['priority']) && ! isset($b['priority'])) {
                 return 0;
             }
             if ($a['priority'] == $b['priority']) {
@@ -114,7 +115,7 @@ class Finder
 
         $instances = [];
         foreach ($providers as $provider) {
-            if (!empty($provider['provider'])) {
+            if (! empty($provider['provider'])) {
                 $class = $provider['provider'];
                 $instances[] = new $class($provider);
             } else {

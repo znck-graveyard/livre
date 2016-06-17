@@ -12,11 +12,11 @@ class Factory
     /**
      * @var array
      */
-    private $configs;
+    protected $configs;
 
     public function __construct(array $providers, array $configs) {
-        $this->providers = $this->load($providers);
         $this->configs = $configs;
+        $this->providers = $this->load($providers);
     }
 
     public function journal(string $issn) {
@@ -84,7 +84,9 @@ class Factory
     protected function makeProvider(string $provider) {
         $config = $this->configs[$provider];
 
-        return new $config['driver']($config);
+        $class = $config['driver'];
+
+        return new $class($config);
     }
 
     protected function createLookupQuery(string $query) {
@@ -92,7 +94,7 @@ class Factory
 
         $l = strlen($query);
 
-        if ($l < 10 or ($l === 13 and preg_match('/^977', $query))) {
+        if ($l < 10 or ($l === 13 and preg_match('/^977/', $query))) {
             return ['issn' => $query];
         }
 

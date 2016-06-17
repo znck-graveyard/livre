@@ -57,9 +57,8 @@ class GoogleBooks extends AbstractDriver
      *
      * @param array $options Developer api key.
      */
-    function __construct($options)
-    {
-        if (empty($options['key'])) {
+    function __construct($options) {
+        if (!isset($options['key'])) {
             throw new \InvalidArgumentException();
         }
 
@@ -74,8 +73,7 @@ class GoogleBooks extends AbstractDriver
      *
      * @return $this
      */
-    public function find(string $isbn)
-    {
+    public function find(string $isbn) {
         return $this->search(compact('isbn'));
     }
 
@@ -86,8 +84,7 @@ class GoogleBooks extends AbstractDriver
      *
      * @return mixed
      */
-    public function search(array $query)
-    {
+    public function search(array $query) {
         $processed = $this->transformQueryParameters($query, $this->queryTransformationMap());
 
         $query = implode(' ', $processed[1]);
@@ -112,8 +109,7 @@ class GoogleBooks extends AbstractDriver
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getResults()
-    {
+    public function getResults() {
         $results = [];
 
         if (empty($this->response)) {
@@ -122,7 +118,7 @@ class GoogleBooks extends AbstractDriver
 
         $data = json_decode($this->response->getBody()->getContents(), true);
 
-        $items = array_get($data, 'items');
+        $items = array_get($data, 'items', []);
         foreach ($items as $item) {
             $attributes = $this->transformBookAttributes((array)$item, $this->bookTransformationMap());
 
@@ -132,12 +128,26 @@ class GoogleBooks extends AbstractDriver
                 if ($v['type'] == 'ISBN_10') {
                     $attributes['isbn10'] = $v['identifier'];
                 } elseif ($v['type'] = 'ISBN_13') {
-                        $attributes['isbn13'] = $v['identifier'];
+                    $attributes['isbn13'] = $v['identifier'];
                 }
             }
 
-            $results[] = new BibItem(array_except($attributes,
-                ['kind', 'id', 'etag', 'selfLink', 'saleInfo', 'accessInfo', 'searchInfo', 'volumeInfo', 'identifiers']));
+            $results[] = new BibItem(
+                array_except(
+                    $attributes,
+                    [
+                        'kind',
+                        'id',
+                        'etag',
+                        'selfLink',
+                        'saleInfo',
+                        'accessInfo',
+                        'searchInfo',
+                        'volumeInfo',
+                        'identifiers',
+                    ]
+                )
+            );
         }
 
         return new Collection($results);
@@ -153,10 +163,13 @@ class GoogleBooks extends AbstractDriver
      *
      * @return string
      */
-    protected function prepareQuery($query)
-    {
+    protected function prepareQuery($query) {
         $query = urlencode(trim($query));
         $query = str_replace('%3A', ':', $query);
+
+        if (empty($this->key)) {
+            return static::API.$query;
+        }
 
         return static::API.$query.'&key='.$this->key;
     }

@@ -1,33 +1,12 @@
-<?php namespace Znck\Livre\Providers;
+<?php namespace Znck\Livre\Drivers;
 
-use Znck\Livre\Contracts\Provider as ProviderContract;
+use Znck\Livre\Contracts\BookSearchDriver;
 
-abstract class Provider implements ProviderContract
+abstract class AbstractDriver implements BookSearchDriver
 {
-    /**
-     * @var string
-     */
-    protected $name;
+    protected static $queryTransformationMap = [];
 
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        if (empty($this->name)) {
-            $this->name = $this->getDefaultName();
-        }
-
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
+    protected static $bookTransformationMap = [];
 
     /**
      * Transform request parameters using the provided map.
@@ -41,7 +20,7 @@ abstract class Provider implements ProviderContract
     {
         $processed = [];
         $ignored = [];
-        foreach ($query as $key => $value) {
+        foreach ((array)$query as $key => $value) {
             if (! empty($value)) {
                 if (array_key_exists($key, $map)) {
                     $processed[$map[$key]] = $value;
@@ -67,5 +46,21 @@ abstract class Provider implements ProviderContract
         }
 
         return $processed;
+    }
+
+    /**
+     * @return array
+     */
+    protected function queryTransformationMap()
+    {
+        return static::$queryTransformationMap;
+    }
+
+    /**
+     * @return array
+     */
+    protected function bookTransformationMap()
+    {
+        return static::$bookTransformationMap;
     }
 }

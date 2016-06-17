@@ -6,8 +6,8 @@
   "keywords": ["laravel", "books", "isbn", "library", "catalog", "classification"],
   "require": {
     "php": ">=7.0",
-    "guzzlehttp/guzzle": "~6.0",
-    "illuminate/support": "~5.2"
+    "guzzlehttp/guzzle": "^6.0",
+    "illuminate/support": "^5.2"
   },
   "require-dev": {
     "phpunit/phpunit": "~5.0",

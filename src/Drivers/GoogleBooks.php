@@ -1,17 +1,40 @@
-<?php namespace Znck\Livre\Providers;
+<?php namespace Znck\Livre\Drivers;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
-use Znck\Livre\Book;
+use Znck\Livre\BibItem;
+use Znck\Livre\Drivers\AbstractDriver;
 
-/**
- * This file belongs to book-finder.
- *
- * Author: Rahul Kadyan, <hi@znck.me>
- * Find license in root directory of this project.
- */
-class GoogleBooksProvider extends Provider
+class GoogleBooks extends AbstractDriver
 {
+    static protected $bookTransformationMap = [
+        'volumeInfo' => [
+            'title' => 'title',
+            'subtitle' => 'subTitle',
+            'maturityRating' => 'maturityRating',
+            'authors' => 'authors',
+            'publisher' => 'publisher',
+            'publishedDate' => 'publishedDate',
+            'description' => 'description',
+            'industryIdentifiers' => 'identifiers',
+            'pageCount' => 'pageCount',
+            'dimensions' => 'dimensions',
+            'printType' => 'printType',
+            'mainCategory' => 'mainCategory',
+            'categories' => 'categories',
+            'averageRating' => 'rating',
+            'contentVersion' => 'contentVersion',
+            'imageLinks' => 'images',
+            'language' => 'language',
+        ],
+    ];
+    static protected $queryTransformationMap = [
+        'title' => 'intitle:',
+        'author' => 'inauthor:',
+        'publisher' => 'inpublisher:',
+        'category' => 'subject:',
+        'isbn' => 'isbn:',
+    ];
     /**
      *
      */
@@ -51,7 +74,7 @@ class GoogleBooksProvider extends Provider
      *
      * @return $this
      */
-    public function find($isbn)
+    public function find(string $isbn)
     {
         return $this->search(compact('isbn'));
     }
@@ -63,7 +86,7 @@ class GoogleBooksProvider extends Provider
      *
      * @return mixed
      */
-    public function search($query)
+    public function search(array $query)
     {
         $processed = $this->transformQueryParameters($query, $this->queryTransformationMap());
 
@@ -108,20 +131,22 @@ class GoogleBooksProvider extends Provider
             foreach ($attributes['identifiers'] as $v) {
                 if ($v['type'] == 'ISBN_10') {
                     $attributes['isbn10'] = $v['identifier'];
-                } else {
-                    if ($v['type'] = 'ISBN_13') {
+                } elseif ($v['type'] = 'ISBN_13') {
                         $attributes['isbn13'] = $v['identifier'];
-                    }
                 }
             }
 
-            $results[] = new Book(array_except($attributes,
+            $results[] = new BibItem(array_except($attributes,
                 ['kind', 'id', 'etag', 'selfLink', 'saleInfo', 'accessInfo', 'searchInfo', 'volumeInfo', 'identifiers']));
         }
 
         return new Collection($results);
     }
 
+
+    public function title(string $title) {
+        return $this->search(compact('title'));
+    }
 
     /**
      * @param $query
@@ -134,59 +159,5 @@ class GoogleBooksProvider extends Provider
         $query = str_replace('%3A', ':', $query);
 
         return static::API.$query.'&key='.$this->key;
-    }
-
-    /**
-     * Name of the provider
-     *
-     * @return string
-     */
-    public function getDefaultName()
-    {
-        return 'Google Books API';
-    }
-
-    /**
-     * @return array
-     */
-    protected function queryTransformationMap()
-    {
-        return [
-            'title'     => 'intitle:',
-            'author'    => 'inauthor:',
-            'publisher' => 'inpublisher:',
-            'category'  => 'subject:',
-            'isbn'      => 'isbn:',
-            'lccn'      => 'lccn:',
-            'oclc'      => 'oclc:',
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    protected function bookTransformationMap()
-    {
-        return [
-            'volumeInfo' => [
-                'title'               => 'title',
-                'subtitle'            => 'subTitle',
-                'maturityRating'      => 'maturityRating',
-                'authors'             => 'authors',
-                'publisher'           => 'publisher',
-                'publishedDate'       => 'publishedDate',
-                'description'         => 'description',
-                'industryIdentifiers' => 'identifiers',
-                'pageCount'           => 'pageCount',
-                'dimensions'          => 'dimensions',
-                'printType'           => 'printType',
-                'mainCategory'        => 'mainCategory',
-                'categories'          => 'categories',
-                'averageRating'       => 'rating',
-                'contentVersion'      => 'contentVersion',
-                'imageLinks'          => 'images',
-                'language'            => 'language',
-            ],
-        ];
     }
 }

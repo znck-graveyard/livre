@@ -1,18 +1,15 @@
 <?php namespace Znck\Livre\Contracts;
 
-/**
- * Interface Provider
- */
-interface Provider
+interface BookSearchDriver
 {
     /**
-     * Find book by ISBN identifier.
+     * Find book by ISBN/ISSN identifier.
      *
      * @param string $isbn
      *
      * @return $this
      */
-    public function find($isbn);
+    public function find(string $isbn);
 
     /**
      * Search book by tags like title, author, publisher etc.
@@ -21,7 +18,10 @@ interface Provider
      *
      * @return $this
      */
-    public function search($query);
+    public function search(array $query);
+
+
+    public function title(string $title);
 
     /**
      * Formatted results.
@@ -29,11 +29,4 @@ interface Provider
      * @return \Illuminate\Support\Collection
      */
     public function getResults();
-
-    /**
-     * Name of the provider
-     *
-     * @return string
-     */
-    public function getDefaultName();
 }
